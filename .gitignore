@@ -1,5 +1,5 @@
-# Eclipse project files
-.settings/
+# SES project file
+*.emSession
 
 #debug_release
 Debug/
