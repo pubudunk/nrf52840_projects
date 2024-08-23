@@ -107,12 +107,12 @@ int main(void)
 
         if( cr == 'n' ) {
             bsp_board_leds_on();
-            printf("Turned on leds\n");    
+            UART_LOG("Turned on leds\n");    
         }
 
         if( cr == 'f' ) {
             bsp_board_leds_off();
-            printf("Turned off leds\n");    
+            UART_LOG("Turned off leds\n");    
         }
     }
 
