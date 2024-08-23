@@ -1,0 +1,63 @@
+<!DOCTYPE CrossStudio_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints groups="Breakpoints" active_group="Breakpoints">
+  <BreakpointListItem trigger="" line="100" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" stopAll="false" group="Breakpoints" type="Breakpoint" state="3" filename="../../../../../../components/libraries/uart/retarget.c" useHWbreakpoint="false"/>
+ </Breakpoints>
+ <ExecutionProfileWindow/>
+ <FrameBuffer/>
+ <Memory1/>
+ <Memory2/>
+ <Memory3/>
+ <Memory4/>
+ <Project>
+  <ProjectSessionItem path="uart_pca10059_mbr"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr;Application"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr;Board Definition"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr;nRF_Drivers"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr;nRF_Libraries"/>
+  <ProjectSessionItem path="uart_pca10059_mbr;uart_pca10059_mbr;Segger Startup Files"/>
+ </Project>
+ <Register1/>
+ <Register2/>
+ <Register3/>
+ <Register4/>
+ <Threads>
+  <ThreadsWindow showLists=""/>
+ </Threads>
+ <TraceWindow>
+  <Trace enabled="Yes"/>
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never"/>
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never"/>
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never"/>
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never"/>
+ </Watch4>
+ <Files>
+  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="121" useTextEdit="1" path="../../../../../../integration/nrfx/legacy/nrf_drv_uart.h" left="0" top="117" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="656" useTextEdit="1" path="../config/sdk_config.h" left="0" selected="1" top="644" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="12" y="100" useTextEdit="1" path="../../../main.c" left="0" top="54" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="57" y="129" useTextEdit="1" path="../../../../../../components/libraries/uart/app_uart.h" left="0" top="112" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="41" y="164" useTextEdit="1" path="../../../../../../components/libraries/util/app_error.h" left="0" top="144" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="19" y="65" useTextEdit="1" path="../../../../../../components/drivers_nrf/nrf_soc_nosd/nrf_error.h" left="0" top="48" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="74" useTextEdit="1" path="../../../../../../components/boards/boards.h" left="0" top="63" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="44" y="52" useTextEdit="1" path="../../../../../../components/boards/pca10059.h" left="0" top="39" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="106" useTextEdit="1" path="../../../../../../modules/nrfx/hal/nrf_uart.h" left="0" top="90" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="7" y="117" useTextEdit="1" path="C:/Program Files/SEGGER/SEGGER Embedded Studio 8.16/include/stdio.h" left="0" top="101" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" path="../../../../../../external/segger_rtt/SEGGER_RTT_printf.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="45" y="84" useTextEdit="1" path="../../../../../../external/segger_rtt/SEGGER_RTT_Conf.h" left="0" top="59" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="127" useTextEdit="1" path="../../../../../../components/libraries/uart/retarget.c" left="0" top="119" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="9" y="199" useTextEdit="1" path="../../../../../../components/libraries/uart/app_uart_fifo.c" left="0" top="154" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="13" y="7" useTextEdit="1" path="../../../log.c" left="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="13" y="3" useTextEdit="1" path="../../../log.h" left="0" top="0" codecName="Default"/>
+ </Files>
+ <EMStudioWindow activeProject="uart_pca10059_mbr" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/Users/pubud/Desktop/Learning/BLE/sdk/nRF5_SDK_17.1.0_ddde560/components/libraries/uart" debugSearchPath="" autoConnectCapabilities="3199"/>
+</session>
