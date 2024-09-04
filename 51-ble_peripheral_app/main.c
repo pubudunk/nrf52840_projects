@@ -17,14 +17,54 @@
 
 #include "nrf_ble_qwr.h"
 
-#define APP_BLE_CONN_CFG_TAG    1
-#define APP_BLE_OBSERVER_PRIO   3
+#include "nrf_ble_gatt.h"
+
+#define APP_BLE_CONN_CFG_TAG      1
+#define APP_BLE_OBSERVER_PRIO     3
+
+#define DEVICE_NAME               "NRF52_BLE_APP"
+
+#define MIN_CONN_INTERVAL         MSEC_TO_UNITS(100, UNIT_1_25_MS)
+#define MAX_CONN_INTERNAL         MSEC_TO_UNITS(200, UNIT_1_25_MS)
+#define SLAVE_LATENCY             0
+#define CONN_SUPERVISION_TIMEOUT  MSEC_TO_UNITS(2000, UNIT_10_MS)
 
 
 NRF_BLE_QWR_DEF(m_qwr);   /* Use NRF_BLE_QWRS_DEF if multiple connections are used */
-
+NRF_BLE_GATT_DEF(m_gatt);
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+
+/* Step 7: Init GATT */
+static void init_gatt(void)
+{
+  ret_code_t err_code = nrf_ble_gatt_init(&m_gatt, NULL);
+  APP_ERROR_CHECK(err_code);
+}
+
+/* Step 6: Init GAP */
+static void init_gap_params(void)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  ble_gap_conn_params_t     gap_conn_params = {0};
+  ble_gap_conn_sec_mode_t   sec_mode = {0};
+
+  /* Setting basic (no) security */
+  BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+
+  err_code = sd_ble_gap_device_name_set(&sec_mode, (const uint8_t *)DEVICE_NAME, strlen(DEVICE_NAME));
+  APP_ERROR_CHECK(err_code);
+
+  gap_conn_params.min_conn_interval = MIN_CONN_INTERVAL;
+  gap_conn_params.max_conn_interval = MAX_CONN_INTERNAL;
+  gap_conn_params.slave_latency = SLAVE_LATENCY;
+  gap_conn_params.conn_sup_timeout = CONN_SUPERVISION_TIMEOUT;
+
+  err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
+  APP_ERROR_CHECK(err_code);
+}
 
 
 /* Step 5.1: BLE Event handler */
@@ -131,6 +171,13 @@ int main(void)
   log_init();
   timer_init();
   init_leds();
+
+  init_power_management();
+  
+  /* Init Soft device and parameters */
+  init_ble_stack();
+  init_gap_params();
+  init_gatt();
 
   // Enter main loop.
   for (;;)
