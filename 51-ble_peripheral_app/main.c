@@ -19,6 +19,9 @@
 
 #include "nrf_ble_gatt.h"
 
+#include "ble_advdata.h"
+#include "ble_advertising.h"
+
 #define APP_BLE_CONN_CFG_TAG      1
 #define APP_BLE_OBSERVER_PRIO     3
 
@@ -29,12 +32,79 @@
 #define SLAVE_LATENCY             0
 #define CONN_SUPERVISION_TIMEOUT  MSEC_TO_UNITS(2000, UNIT_10_MS)
 
+#define APP_ADV_INTERVAL          300
+#define APP_ADV_DURATION          0   /* Continous Advertising */
+
 
 NRF_BLE_QWR_DEF(m_qwr);   /* Use NRF_BLE_QWRS_DEF if multiple connections are used */
 NRF_BLE_GATT_DEF(m_gatt);
+BLE_ADVERTISING_DEF(m_advertising);
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
+/* Step 9.1: queue writer error handler */
+static void nrf_qwr_error_handler(uint32_t nrf_error)
+{
+  APP_ERROR_HANDLER(nrf_error);
+}
+
+/* Step 9: Init Services */
+static void init_services(void)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  nrf_ble_qwr_init_t qwr_init = {0};
+
+  qwr_init.error_handler = nrf_qwr_error_handler;
+
+  err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
+  APP_ERROR_CHECK(err_code);
+}
+
+/* Step 8.1: Advertising event handler */
+static void on_adv_event(ble_adv_evt_t ble_adv_evt)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  switch(ble_adv_evt) 
+  {
+    case BLE_ADV_EVT_FAST:
+      NRF_LOG_INFO("Fast advertising...");
+      err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
+      APP_ERROR_CHECK(err_code);
+    break;
+    case BLE_ADV_EVT_IDLE:
+      NRF_LOG_INFO("Advertising event Idle...");
+      err_code = bsp_indication_set(BSP_INDICATE_IDLE);
+      APP_ERROR_CHECK(err_code);
+    break;
+    default:
+    break;
+   }
+}
+
+/* Step 8: Init Advertising */
+static void init_advertising(void)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  ble_advertising_init_t init = {0};
+
+  init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
+  init.advdata.include_appearance = true;
+  init.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+
+  init.config.ble_adv_fast_enabled = true;
+  init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
+  init.config.ble_adv_fast_timeout = APP_ADV_DURATION;
+
+  init.evt_handler = on_adv_event;
+
+  err_code = ble_advertising_init(&m_advertising, &init);
+  APP_ERROR_CHECK(err_code);
+
+  ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
+}
 
 /* Step 7: Init GATT */
 static void init_gatt(void)
@@ -65,7 +135,6 @@ static void init_gap_params(void)
   err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
   APP_ERROR_CHECK(err_code);
 }
-
 
 /* Step 5.1: BLE Event handler */
 static void ble_event_handler(ble_evt_t const *p_ble_evt, void *p_context)
