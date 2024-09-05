@@ -22,6 +22,8 @@
 #include "ble_advdata.h"
 #include "ble_advertising.h"
 
+#include "ble_conn_params.h"
+
 #define APP_BLE_CONN_CFG_TAG      1
 #define APP_BLE_OBSERVER_PRIO     3
 
@@ -35,12 +37,62 @@
 #define APP_ADV_INTERVAL          300
 #define APP_ADV_DURATION          0   /* Continous Advertising */
 
+#define FIRST_CONN_PARAMS_UPDATE_DELAY    APP_TIMER_TICKS(5000)
+#define NEXT_CONN_PARAMS_UPDATE_DELAY     APP_TIMER_TICKS(30000)
+#define MAX_CONN_PARAMS_UPDATE_COUNT      3
+
 
 NRF_BLE_QWR_DEF(m_qwr);   /* Use NRF_BLE_QWRS_DEF if multiple connections are used */
 NRF_BLE_GATT_DEF(m_gatt);
 BLE_ADVERTISING_DEF(m_advertising);
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+/* Step 10.1: Connection parameter event handler */
+static void on_conn_params_evt(ble_conn_params_evt_t *p_evt)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  if(p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED)
+  {
+    err_code = sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+    APP_ERROR_CHECK(err_code);
+  }
+
+  if(p_evt->evt_type == BLE_CONN_PARAMS_EVT_SUCCEEDED)
+  {
+    NRF_LOG_INFO("Con params updated...");
+  }
+}
+
+/* Step 10.2: Connection parameter error handler */
+static void conn_params_error_handler(uint32_t nrf_error)
+{
+  APP_ERROR_HANDLER(nrf_error);
+}
+
+/* Step 10: setting connection params */
+static void init_conn_params(void)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  ble_conn_params_init_t cp_init = {0};
+
+  cp_init.p_conn_params = NULL;
+  cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
+  cp_init.next_conn_params_update_delay = NEXT_CONN_PARAMS_UPDATE_DELAY;
+  cp_init.max_conn_params_update_count = MAX_CONN_PARAMS_UPDATE_COUNT;
+
+  cp_init.start_on_notify_cccd_handle = BLE_GATT_HANDLE_INVALID;
+
+  cp_init.disconnect_on_fail = false; /* Not to disconnect if the parameter update failes */
+
+  cp_init.error_handler = conn_params_error_handler;
+  cp_init.evt_handler = on_conn_params_evt;
+
+  err_code = ble_conn_params_init(&cp_init);
+  APP_ERROR_CHECK(err_code);
+}
 
 /* Step 9.1: queue writer error handler */
 static void nrf_qwr_error_handler(uint32_t nrf_error)
