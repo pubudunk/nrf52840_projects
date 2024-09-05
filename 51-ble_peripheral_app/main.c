@@ -284,6 +284,16 @@ static void log_init(void)
   NRF_LOG_DEFAULT_BACKENDS_INIT();
 }
 
+/* Step 11: Start advertisements */
+static void start_advertisments(void)
+{
+  ret_code_t  ret_error = NRF_SUCCESS;
+
+  /* make sure to use the same mode of advertisement used in advertisement init */
+  ret_code_t ret_code = ble_advertising_start(&m_advertising, BLE_ADV_MODE_FAST);
+  APP_ERROR_CHECK(ret_code);
+}
+
 
 /**@brief Function for application main entry.
  */
@@ -299,15 +309,18 @@ int main(void)
   init_ble_stack();
   init_gap_params();
   init_gatt();
+  init_advertising();
+  init_services();
+  init_conn_params();
+
+  NRF_LOG_INFO("BLE Base Application started...");
+
+  start_advertisments();
 
   // Enter main loop.
   for (;;)
   {
-    NRF_LOG_DEBUG("this is a debug from nrf");
-    NRF_LOG_INFO("this is a info from nrf");
     idle_state_handler();
-    
-    //nrf_delay_ms(2000);
   }
 }
 
