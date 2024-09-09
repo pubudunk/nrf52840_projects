@@ -406,15 +406,15 @@ int main(void)
   NRF_LOG_INFO("BLE Base Application started...");
 
   /* Set device address */
-  //set_random_static_addr();
-  set_non_resolvable_pvt_addr();
+  set_random_static_addr();
+  //set_non_resolvable_pvt_addr();
 
   start_advertisments();
 
   /* check device addr */
-  //get_device_adv_addr();
-  ret_code = app_timer_start(m_check_ble_id, CHECK_BLE_ADV_ADDR_TIME_INTERVAL, NULL);
-  APP_ERROR_CHECK(ret_code);
+  get_device_adv_addr();
+  //ret_code = app_timer_start(m_check_ble_id, CHECK_BLE_ADV_ADDR_TIME_INTERVAL, NULL);
+  //APP_ERROR_CHECK(ret_code);
 
   // Enter main loop.
   for (;;)
