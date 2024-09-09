@@ -149,7 +149,7 @@ static void init_advertising(void)
   ble_advertising_init_t init = {0};
 
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
-  init.advdata.include_appearance = true;
+  init.advdata.include_appearance = true; /* We are including appearance and be default it will set to unknown unless we set to a type when setting GAP param */
   init.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
   init.config.ble_adv_fast_enabled = true;
@@ -183,6 +183,10 @@ static void init_gap_params(void)
   BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
   err_code = sd_ble_gap_device_name_set(&sec_mode, (const uint8_t *)DEVICE_NAME, strlen(DEVICE_NAME));
+  APP_ERROR_CHECK(err_code);
+
+  /* Set device appearance */
+  err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_GENERIC_CYCLING);
   APP_ERROR_CHECK(err_code);
 
   gap_conn_params.min_conn_interval = MIN_CONN_INTERVAL;
