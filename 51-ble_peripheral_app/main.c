@@ -51,7 +51,6 @@ APP_TIMER_DEF(m_check_ble_id); /* To check BLE address periodically for non-reso
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
 
-
 static void check_ble_id_timeout_handler(void *p_context);
 
 /* Step 10.1: Connection parameter event handler */
@@ -157,6 +156,14 @@ static void init_advertising(void)
   init.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
   /* TX power level */
   init.advdata.p_tx_power_level = &tx_power_lvl; /* This only adds the power level in the adv packet. Not setting the transmitter */
+
+  /* list of uuids */
+  ble_uuid_t m_adv_uuids[] = {
+                                {BLE_UUID_HEALTH_THERMOMETER_SERVICE, BLE_UUID_TYPE_BLE},
+                                {BLE_UUID_BATTERY_SERVICE, BLE_UUID_TYPE_BLE}
+                              };
+  init.advdata.uuids_complete.p_uuids = m_adv_uuids;
+  init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids)/sizeof(m_adv_uuids[0]);
 
   init.config.ble_adv_fast_enabled = true;
   init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
