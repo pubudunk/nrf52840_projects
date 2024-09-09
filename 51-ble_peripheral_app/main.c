@@ -41,12 +41,18 @@
 #define NEXT_CONN_PARAMS_UPDATE_DELAY     APP_TIMER_TICKS(30000)
 #define MAX_CONN_PARAMS_UPDATE_COUNT      3
 
+#define CHECK_BLE_ADV_ADDR_TIME_INTERVAL  APP_TIMER_TICKS(9000)  /* 9 seconds */   
 
 NRF_BLE_QWR_DEF(m_qwr);   /* Use NRF_BLE_QWRS_DEF if multiple connections are used */
 NRF_BLE_GATT_DEF(m_gatt);
 BLE_ADVERTISING_DEF(m_advertising);
 
+APP_TIMER_DEF(m_check_ble_id); /* To check BLE address periodically for non-resolvable private addr */
+
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;
+
+
+static void check_ble_id_timeout_handler(void *p_context);
 
 /* Step 10.1: Connection parameter event handler */
 static void on_conn_params_evt(ble_conn_params_evt_t *p_evt)
@@ -273,6 +279,10 @@ static void timer_init(void)
 {
   ret_code_t  err_code = app_timer_init();
   APP_ERROR_CHECK(err_code);
+
+  /* Step 12.4: create timer for ble_id reading */
+  err_code = app_timer_create(&m_check_ble_id, APP_TIMER_MODE_REPEATED, check_ble_id_timeout_handler);
+  APP_ERROR_CHECK(err_code);
 }
 
 /* Step 1: Initialize the logger */
@@ -298,7 +308,7 @@ static void start_advertisments(void)
 /* Step 12.1: Set random  static address */
 static void set_random_static_addr(void)
 {
-  uint32_t err_code = NRF_SUCCESS;
+  ret_code_t err_code = NRF_SUCCESS;
 
   ble_gap_addr_t ble_addr = {0};
 
@@ -318,10 +328,29 @@ static void set_random_static_addr(void)
   }
 }
 
+/* Step 12.3: Set non-resolvabile private address */
+static void set_non_resolvable_pvt_addr(void)
+{
+  ret_code_t err_code = 0;
+
+  ble_gap_privacy_params_t ble_addr = {0};
+
+  ble_addr.privacy_mode = BLE_GAP_PRIVACY_MODE_DEVICE_PRIVACY;
+  ble_addr.private_addr_type = BLE_GAP_ADDR_TYPE_RANDOM_PRIVATE_NON_RESOLVABLE;
+  ble_addr.private_addr_cycle_s = 15; /* 15 seconds */
+  ble_addr.p_device_irk = NULL;
+
+  err_code = sd_ble_gap_privacy_set(&ble_addr);
+  if( err_code != NRF_SUCCESS )
+  {
+    NRF_LOG_INFO("Setting random static addr failed. Error code: %X", err_code);
+  }
+}
+
 /* Step 12.2: Get the device advertising address */
 static void get_device_adv_addr(void)
 {
-  uint32_t err_code = 0;
+  ret_code_t err_code = 0;
 
   ble_gap_addr_t ble_addr = {0};
 
@@ -336,10 +365,30 @@ static void get_device_adv_addr(void)
   }
 }
 
+/* Step 12.4: Read ble id in timeout handler */
+static void check_ble_id_timeout_handler(void *p_context)
+{
+  ret_code_t err_code = NRF_SUCCESS;
+
+  ble_gap_addr_t ble_addr = {0};
+
+  err_code = sd_ble_gap_adv_addr_get(m_advertising.adv_handle, &ble_addr);
+  if( err_code == NRF_SUCCESS )
+  {
+    NRF_LOG_INFO("Address Type: %02X", ble_addr.addr_type);
+    NRF_LOG_INFO("Device Addr: %02X:%02X:%02X:%02X:%02X:%02X",
+                        ble_addr.addr[5], ble_addr.addr[4], ble_addr.addr[3], 
+                        ble_addr.addr[2], ble_addr.addr[1], ble_addr.addr[0]);
+  }
+}
+
+
 /**@brief Function for application main entry.
  */
 int main(void)
 {
+  ret_code_t ret_code = NRF_SUCCESS;
+
   log_init();
   timer_init();
   init_leds();
@@ -356,13 +405,16 @@ int main(void)
 
   NRF_LOG_INFO("BLE Base Application started...");
 
-  /* Set random static device address */
-  set_random_static_addr();
+  /* Set device address */
+  //set_random_static_addr();
+  set_non_resolvable_pvt_addr();
 
   start_advertisments();
 
   /* check device addr */
-  get_device_adv_addr();
+  //get_device_adv_addr();
+  ret_code = app_timer_start(m_check_ble_id, CHECK_BLE_ADV_ADDR_TIME_INTERVAL, NULL);
+  APP_ERROR_CHECK(ret_code);
 
   // Enter main loop.
   for (;;)
