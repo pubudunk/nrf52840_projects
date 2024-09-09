@@ -148,6 +148,10 @@ static void init_advertising(void)
   ble_advertising_init_t init = {0};
   int8_t tx_power_lvl = 0;
 
+  ble_advdata_service_data_t service_data = {0};
+  uint8_t bat_lvl = 90;
+
+
   /* Device Name */
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
   /* Device Appearance */
@@ -157,7 +161,7 @@ static void init_advertising(void)
   /* TX power level */
   init.advdata.p_tx_power_level = &tx_power_lvl; /* This only adds the power level in the adv packet. Not setting the transmitter */
 
-  /* list of uuids */
+  /* list of uuids */ /* This is only to inform a central about available services */
   ble_uuid_t m_adv_uuids[] = {
                                 {BLE_UUID_HEALTH_THERMOMETER_SERVICE, BLE_UUID_TYPE_BLE},
                                 {BLE_UUID_BATTERY_SERVICE, BLE_UUID_TYPE_BLE}
@@ -165,6 +169,15 @@ static void init_advertising(void)
   init.advdata.uuids_complete.p_uuids = m_adv_uuids;
   init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids)/sizeof(m_adv_uuids[0]);
 
+  /* Service data /* /* This is not registering with GATT for connection event data transfer */
+  service_data.service_uuid = BLE_UUID_BATTERY_SERVICE;
+  service_data.data.p_data = &bat_lvl;
+  service_data.data.size  = sizeof(bat_lvl);
+
+  init.advdata.p_service_data_array = &service_data;
+  init.advdata.service_data_count = 1;
+
+  /* Advertising params */
   init.config.ble_adv_fast_enabled = true;
   init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
   init.config.ble_adv_fast_timeout = APP_ADV_DURATION;
