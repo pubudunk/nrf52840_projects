@@ -287,13 +287,54 @@ static void log_init(void)
 /* Step 11: Start advertisements */
 static void start_advertisments(void)
 {
-  ret_code_t  ret_error = NRF_SUCCESS;
+  ret_code_t  ret_code = NRF_SUCCESS;
 
   /* make sure to use the same mode of advertisement used in advertisement init */
-  ret_code_t ret_code = ble_advertising_start(&m_advertising, BLE_ADV_MODE_FAST);
+  ret_code = ble_advertising_start(&m_advertising, BLE_ADV_MODE_FAST);
   APP_ERROR_CHECK(ret_code);
 }
 
+
+/* Step 12.1: Set random  static address */
+static void set_random_static_addr(void)
+{
+  uint32_t err_code = NRF_SUCCESS;
+
+  ble_gap_addr_t ble_addr = {0};
+
+  ble_addr.addr[0] = 0x56;
+  ble_addr.addr[1] = 0xCE;
+  ble_addr.addr[2] = 0x88;
+  ble_addr.addr[3] = 0x99;
+  ble_addr.addr[4] = 0x01;
+  ble_addr.addr[5] = 0xFF; 
+
+  ble_addr.addr_type = BLE_GAP_ADDR_TYPE_RANDOM_STATIC;
+
+  err_code = sd_ble_gap_addr_set(&ble_addr);
+  if( err_code != NRF_SUCCESS )
+  {
+    NRF_LOG_INFO("Setting random static addr failed. Error code: %X", err_code);
+  }
+}
+
+/* Step 12.2: Get the device advertising address */
+static void get_device_adv_addr(void)
+{
+  uint32_t err_code = 0;
+
+  ble_gap_addr_t ble_addr = {0};
+
+  err_code = sd_ble_gap_addr_get(&ble_addr);
+  
+  if( err_code == NRF_SUCCESS )
+  {
+    NRF_LOG_INFO("Address Type: %02X", ble_addr.addr_type);
+    NRF_LOG_INFO("Device Addr: %02X:%02X:%02X:%02X:%02X:%02X",
+                        ble_addr.addr[5], ble_addr.addr[4], ble_addr.addr[3], 
+                        ble_addr.addr[2], ble_addr.addr[1], ble_addr.addr[0]);
+  }
+}
 
 /**@brief Function for application main entry.
  */
@@ -315,7 +356,13 @@ int main(void)
 
   NRF_LOG_INFO("BLE Base Application started...");
 
+  /* Set random static device address */
+  set_random_static_addr();
+
   start_advertisments();
+
+  /* check device addr */
+  get_device_adv_addr();
 
   // Enter main loop.
   for (;;)
