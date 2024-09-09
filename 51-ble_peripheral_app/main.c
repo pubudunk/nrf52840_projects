@@ -147,6 +147,7 @@ static void init_advertising(void)
   ret_code_t err_code = NRF_SUCCESS;
 
   ble_advertising_init_t init = {0};
+  int8_t tx_power_lvl = 0;
 
   /* Device Name */
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
@@ -154,6 +155,8 @@ static void init_advertising(void)
   init.advdata.include_appearance = true; /* We are including appearance and be default it will set to unknown unless we set to a type when setting GAP param */
   /* Flags */
   init.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+  /* TX power level */
+  init.advdata.p_tx_power_level = &tx_power_lvl; /* This only adds the power level in the adv packet. Not setting the transmitter */
 
   init.config.ble_adv_fast_enabled = true;
   init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
