@@ -148,8 +148,11 @@ static void init_advertising(void)
 
   ble_advertising_init_t init = {0};
 
+  /* Device Name */
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
+  /* Device Appearance */
   init.advdata.include_appearance = true; /* We are including appearance and be default it will set to unknown unless we set to a type when setting GAP param */
+  /* Flags */
   init.advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
   init.config.ble_adv_fast_enabled = true;
