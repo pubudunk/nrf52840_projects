@@ -153,6 +153,9 @@ static void init_advertising(void)
 
   ble_advdata_conn_int_t  conn_int_range = {0};
 
+  uint8_t vendor_adv_data[4] = {0x12, 0x34, 0x56, 0x78};
+  ble_advdata_manuf_data_t manu_specific_data = {0};
+
   /* Device Name */
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
   /* Device Appearance */
@@ -162,6 +165,7 @@ static void init_advertising(void)
   /* TX power level */
   init.advdata.p_tx_power_level = &tx_power_lvl; /* This only adds the power level in the adv packet. Not setting the transmitter */
 
+#if 0   /* To save space in the adv packet use as required */
   /* list of uuids */ /* This is only to inform a central about available services */
   ble_uuid_t m_adv_uuids[] = {
                                 {BLE_UUID_HEALTH_THERMOMETER_SERVICE, BLE_UUID_TYPE_BLE},
@@ -170,21 +174,30 @@ static void init_advertising(void)
   init.advdata.uuids_complete.p_uuids = m_adv_uuids;
   init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids)/sizeof(m_adv_uuids[0]);
 
+
+
   /* Service data /* /* This is not registering with GATT for connection event data transfer */
-#if 0   /* To save space in the adv packet use as required */
+
   service_data.service_uuid = BLE_UUID_BATTERY_SERVICE;
   service_data.data.p_data = &bat_lvl;
   service_data.data.size  = sizeof(bat_lvl);
 
   init.advdata.p_service_data_array = &service_data;
   init.advdata.service_data_count = 1;
-#endif
+
 
     /* connection interval range */
   conn_int_range.min_conn_interval = MIN_CONN_INTERVAL;
   conn_int_range.max_conn_interval = MAX_CONN_INTERNAL;
   init.advdata.p_slave_conn_int = &conn_int_range;
+#endif
 
+  /* Vendor (manufacturer) specific data */
+  manu_specific_data.company_identifier = 0x0059; /* Thid is nordic company manufacturing id */
+  manu_specific_data.data.p_data = vendor_adv_data;
+  manu_specific_data.data.size = sizeof(vendor_adv_data)/(sizeof(vendor_adv_data[0]));
+  init.advdata.p_manuf_specific_data = &manu_specific_data;
+  
   /* Advertising params */
   init.config.ble_adv_fast_enabled = true;
   init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
