@@ -151,6 +151,7 @@ static void init_advertising(void)
   ble_advdata_service_data_t service_data = {0};
   uint8_t bat_lvl = 90;
 
+  ble_advdata_conn_int_t  conn_int_range = {0};
 
   /* Device Name */
   init.advdata.name_type =  BLE_ADVDATA_FULL_NAME;
@@ -170,12 +171,19 @@ static void init_advertising(void)
   init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids)/sizeof(m_adv_uuids[0]);
 
   /* Service data /* /* This is not registering with GATT for connection event data transfer */
+#if 0   /* To save space in the adv packet use as required */
   service_data.service_uuid = BLE_UUID_BATTERY_SERVICE;
   service_data.data.p_data = &bat_lvl;
   service_data.data.size  = sizeof(bat_lvl);
 
   init.advdata.p_service_data_array = &service_data;
   init.advdata.service_data_count = 1;
+#endif
+
+    /* connection interval range */
+  conn_int_range.min_conn_interval = MIN_CONN_INTERVAL;
+  conn_int_range.max_conn_interval = MAX_CONN_INTERNAL;
+  init.advdata.p_slave_conn_int = &conn_int_range;
 
   /* Advertising params */
   init.config.ble_adv_fast_enabled = true;
